@@ -1,7 +1,12 @@
 'use client';
 
+import GoogleAuthProvider from '@/components/auth/GoogleAuthProvider';
 import { ToastProvider } from '@/components/ui/Toast';
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
-  return <ToastProvider>{children}</ToastProvider>;
+  return (
+    <GoogleAuthProvider>
+      <ToastProvider>{children}</ToastProvider>
+    </GoogleAuthProvider>
+  );
 }

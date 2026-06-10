@@ -4,7 +4,9 @@ import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
+import AuthDivider from '@/components/auth/AuthDivider';
 import AuthSplitLayout from '@/components/auth/AuthSplitLayout';
+import GoogleSignInButton from '@/components/auth/GoogleSignInButton';
 import Button from '@/components/ui/Button';
 import api from '@/lib/api';
 import { isAuthenticated, setAuth } from '@/lib/auth';
@@ -61,6 +63,9 @@ export default function LoginPage() {
         </>
       }
     >
+      <GoogleSignInButton />
+      <AuthDivider />
+
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
           <label htmlFor="email" className="block text-section-title text-navy-700 mb-2">

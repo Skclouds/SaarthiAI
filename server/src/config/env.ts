@@ -30,4 +30,5 @@ export const env = {
   uploadDir: process.env.UPLOAD_DIR || 'uploads',
   maxUploadBytes: 10 * 1024 * 1024,
   ragTopK: parseInt(process.env.RAG_TOP_K || '5', 10),
+  googleClientId: process.env.GOOGLE_CLIENT_ID || '',
 };

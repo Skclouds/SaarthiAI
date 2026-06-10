@@ -21,6 +21,16 @@ export async function login(req: Request, res: Response, next: NextFunction): Pr
   }
 }
 
+export async function googleAuth(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { credential } = req.body;
+    const result = await authService.loginWithGoogle(credential);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function forgotPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const { email } = req.body;

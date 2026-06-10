@@ -30,4 +30,12 @@ router.post(
   authController.forgotPassword,
 );
 
+router.post(
+  '/google',
+  validate([
+    body('credential').notEmpty().withMessage('Google credential is required'),
+  ]),
+  authController.googleAuth,
+);
+
 export default router;
