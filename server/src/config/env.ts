@@ -14,7 +14,16 @@ export const env = {
   port: parseInt(process.env.PORT || '5000', 10),
   mongodbUri: requireEnv('MONGODB_URI'),
   jwtSecret: requireEnv('JWT_SECRET'),
-  clientUrl: process.env.CLIENT_URL || 'http://localhost:3000',
+  /** Runtime-only; prefer reading process.env.CLIENT_URL in CORS middleware. */
+  get clientUrl(): string {
+    if (process.env.CLIENT_URL) {
+      return process.env.CLIENT_URL;
+    }
+    if (process.env.NODE_ENV === 'production') {
+      return '';
+    }
+    return 'http://localhost:3000';
+  },
   geminiApiKey: requireEnv('GEMINI_API_KEY'),
   pineconeApiKey: requireEnv('PINECONE_API_KEY'),
   pineconeIndex: requireEnv('PINECONE_INDEX'),
