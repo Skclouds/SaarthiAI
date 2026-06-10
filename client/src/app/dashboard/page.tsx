@@ -15,7 +15,7 @@ import {
   ThumbsUp,
   TrendingUp,
 } from 'lucide-react';
-import { getUser } from '@/lib/auth';
+import { useAuthUser } from '@/hooks/useAuthUser';
 import { fetchOverviewStats } from '@/lib/stats';
 import { OverviewStats } from '@/types/stats';
 import StatCard from '@/components/ui/StatCard';
@@ -39,7 +39,7 @@ const QUICK_LINKS = [
 ];
 
 export default function DashboardPage() {
-  const user = getUser();
+  const user = useAuthUser();
   const [stats, setStats] = useState<OverviewStats | null>(null);
   const [loading, setLoading] = useState(true);
 

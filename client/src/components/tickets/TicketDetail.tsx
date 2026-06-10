@@ -6,6 +6,7 @@ import { Ticket, TicketStatus } from '@/types/ticket';
 import Badge from '@/components/ui/Badge';
 import { MotionOverlay, MotionModal } from '@/components/ui/motion';
 import { ticketPriorityBadge, ticketStatusBadge, formatStatusLabel } from '@/lib/tokens';
+import ClientDate from '@/components/ui/ClientDate';
 import { cn } from '@/lib/cn';
 
 const STATUS_OPTIONS: TicketStatus[] = ['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'];
@@ -55,7 +56,9 @@ export default function TicketDetail({ ticket, onClose, onStatusChange, updating
 
             <div>
               <p className="text-caption font-medium text-navy-500 mb-1">Created</p>
-              <p className="text-body text-navy-600">{new Date(ticket.createdAt).toLocaleString()}</p>
+              <p className="text-body text-navy-600">
+                <ClientDate iso={ticket.createdAt} format="datetime" />
+              </p>
             </div>
 
             <div>

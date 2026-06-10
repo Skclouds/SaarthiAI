@@ -1,7 +1,5 @@
-import Image from 'next/image';
+import { LOGO_ALT, LOGO_SRC } from '@/lib/brand';
 import { cn } from '@/lib/cn';
-
-const ALT = 'SaarthiAI logo';
 
 type SaarthiLogoVariant = 'full' | 'icon';
 
@@ -32,14 +30,17 @@ export default function SaarthiLogo({
   if (variant === 'full') {
     const width = size ?? 200;
     return (
-      <Image
-        src="/logo.png"
-        alt={ALT}
+      // eslint-disable-next-line @next/next/no-img-element -- static public asset; must work without image optimizer
+      <img
+        src={LOGO_SRC}
+        alt={LOGO_ALT}
         width={width}
         height={Math.round(width * 1.12)}
         className={cn('h-auto max-w-full', className)}
         style={{ width }}
-        priority={priority}
+        loading={priority ? 'eager' : 'lazy'}
+        decoding="async"
+        fetchPriority={priority ? 'high' : undefined}
       />
     );
   }
@@ -55,14 +56,17 @@ export default function SaarthiLogo({
       )}
       style={{ width: iconSize, height: iconSize }}
     >
-      <Image
-        src="/logo.png"
-        alt={ALT}
-        fill
-        sizes={`${iconSize}px`}
-        className="object-cover"
+      {/* eslint-disable-next-line @next/next/no-img-element -- static public asset */}
+      <img
+        src={LOGO_SRC}
+        alt={LOGO_ALT}
+        width={iconSize}
+        height={iconSize}
+        className="w-full h-full object-cover"
         style={{ objectPosition: '50% 8%' }}
-        priority={priority}
+        loading={priority ? 'eager' : 'lazy'}
+        decoding="async"
+        fetchPriority={priority ? 'high' : undefined}
       />
     </div>
   );

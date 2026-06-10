@@ -22,25 +22,23 @@ import StatCard from '@/components/ui/StatCard';
 import EmptyState from '@/components/ui/EmptyState';
 import { Skeleton, SkeletonStatGrid } from '@/components/ui/Skeleton';
 import { MotionPage } from '@/components/ui/motion';
-
-function defaultFromDate(): string {
-  const d = new Date();
-  d.setDate(d.getDate() - 30);
-  return d.toISOString().slice(0, 10);
-}
-
-function todayDate(): string {
-  return new Date().toISOString().slice(0, 10);
-}
+import { defaultAnalyticsFromDate, localDateString } from '@/lib/formatRelativeTime';
+import RelativeTime from '@/components/ui/RelativeTime';
 
 export default function AnalyticsPage() {
-  const [from, setFrom] = useState(defaultFromDate);
-  const [to, setTo] = useState(todayDate);
+  const [from, setFrom] = useState('');
+  const [to, setTo] = useState('');
   const [analytics, setAnalytics] = useState<AnalyticsResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
+  useEffect(() => {
+    setFrom(defaultAnalyticsFromDate());
+    setTo(localDateString());
+  }, []);
+
   const load = useCallback(async (silent = false) => {
+    if (!from || !to) return;
     if (!silent) setLoading(true);
     else setRefreshing(true);
     try {
@@ -55,8 +53,10 @@ export default function AnalyticsPage() {
   }, [from, to]);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    if (from && to) {
+      load();
+    }
+  }, [from, to, load]);
 
   return (
     <MotionPage className="dashboard-page">
@@ -104,7 +104,7 @@ export default function AnalyticsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
             <StatCard
               label="Avg response time"
-              value={`${analytics.avgResponseTimeMs.toLocaleString()} ms`}
+              value={`${analytics.avgResponseTimeMs.toLocaleString('en-US')} ms`}
               icon={BarChart3}
               variant="accent"
               animate={false}
@@ -264,7 +264,7 @@ export default function AnalyticsPage() {
                     <div className="flex items-center justify-between gap-2 mb-1">
                       <p className="text-body font-medium text-foreground">{q.customerName}</p>
                       <span className="text-caption text-slate-400 whitespace-nowrap">
-                        {new Date(q.createdAt).toLocaleDateString()}
+                        <RelativeTime iso={q.createdAt} />
                       </span>
                     </div>
                     <p className="text-body text-slate-600">{q.question}</p>

@@ -124,9 +124,9 @@ export default function ChatWidget({
         {!open && (
           <motion.button
             key="launcher"
-            initial={reduced ? false : { scale: 0, opacity: 0 }}
+            initial={false}
             animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
+            exit={reduced ? undefined : { scale: 0, opacity: 0 }}
             whileHover={reduced ? undefined : { scale: 1.06 }}
             whileTap={reduced ? undefined : { scale: 0.95 }}
             transition={springTransition}

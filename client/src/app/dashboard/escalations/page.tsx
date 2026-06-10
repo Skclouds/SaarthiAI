@@ -12,6 +12,7 @@ import StatCard from '@/components/ui/StatCard';
 import { Skeleton, SkeletonStatGrid } from '@/components/ui/Skeleton';
 import { formatStatusLabel } from '@/lib/tokens';
 import { cn } from '@/lib/cn';
+import ClientDate from '@/components/ui/ClientDate';
 import { MotionPage } from '@/components/ui/motion';
 
 const COLUMNS: {
@@ -59,7 +60,7 @@ function TicketCard({ ticket }: { ticket: Ticket }) {
       <p className="text-caption text-slate-600 line-clamp-2">{ticket.query}</p>
       <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-border-muted">
         <span className="text-[11px] text-slate-400">
-          {new Date(ticket.createdAt).toLocaleDateString()}
+          <ClientDate iso={ticket.createdAt} />
         </span>
         <Badge className="bg-primary-50 text-primary-700 border-primary-100 text-[10px] py-0">
           {formatStatusLabel(ticket.status)}

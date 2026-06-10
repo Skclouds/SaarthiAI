@@ -6,21 +6,8 @@ import { AlertTriangle, Bell, CheckCheck, MessageSquare, Ticket } from 'lucide-r
 import { markAllNotificationsRead, markNotificationRead } from '@/lib/notifications';
 import { useNotifications } from '@/hooks/useNotifications';
 import { Notification, NotificationType } from '@/types/notification';
+import RelativeTime from '@/components/ui/RelativeTime';
 import { cn } from '@/lib/cn';
-
-function formatRelative(iso: string): string {
-  const date = new Date(iso);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  if (diffMins < 1) return 'Just now';
-  if (diffMins < 60) return `${diffMins}m ago`;
-  const diffHours = Math.floor(diffMins / 60);
-  if (diffHours < 24) return `${diffHours}h ago`;
-  const diffDays = Math.floor(diffHours / 24);
-  if (diffDays < 7) return `${diffDays}d ago`;
-  return date.toLocaleDateString();
-}
 
 const TYPE_CONFIG: Record<
   NotificationType,
@@ -202,7 +189,7 @@ export default function NotificationBell() {
                             {notification.message}
                           </p>
                           <p className="text-caption text-navy-400 mt-1">
-                            {formatRelative(notification.createdAt)}
+                            <RelativeTime iso={notification.createdAt} />
                           </p>
                         </div>
                       </button>

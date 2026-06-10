@@ -3,7 +3,8 @@
 import { useRouter } from 'next/navigation';
 import { LogOut, Menu, Search } from 'lucide-react';
 import NotificationBell from './NotificationBell';
-import { clearAuth, getUser } from '@/lib/auth';
+import { clearAuth } from '@/lib/auth';
+import { useAuthUser } from '@/hooks/useAuthUser';
 import { cn } from '@/lib/cn';
 
 interface TopBarProps {
@@ -12,7 +13,7 @@ interface TopBarProps {
 
 export default function TopBar({ onMenuClick }: TopBarProps) {
   const router = useRouter();
-  const user = getUser();
+  const user = useAuthUser();
 
   const handleLogout = () => {
     clearAuth();

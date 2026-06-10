@@ -7,9 +7,7 @@ import { SkeletonDashboardShell } from '@/components/ui/Skeleton';
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const [ready, setReady] = useState(
-    () => typeof window !== 'undefined' && isAuthenticated(),
-  );
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated()) {

@@ -2,16 +2,8 @@
 
 import { AlertTriangle, Bot, Ticket, User } from 'lucide-react';
 import ChatMarkdown from '@/components/chat/ChatMarkdown';
+import ClientDate from '@/components/ui/ClientDate';
 import { TimelineItem } from '@/types/conversation';
-
-function formatTime(iso: string): string {
-  return new Date(iso).toLocaleString(undefined, {
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
 
 interface ConversationTranscriptProps {
   timeline: TimelineItem[];
@@ -60,7 +52,7 @@ export default function ConversationTranscript({ timeline }: ConversationTranscr
                   )}
                 </div>
                 <p className="text-[10px] text-slate-400 mt-1 px-1">
-                  {formatTime(item.createdAt)}
+                  <ClientDate iso={item.createdAt} format="datetime" />
                   {item.responseTimeMs != null && ` · ${item.responseTimeMs}ms`}
                 </p>
               </div>
@@ -81,7 +73,9 @@ export default function ConversationTranscript({ timeline }: ConversationTranscr
                   <p className="text-xs text-amber-600 mt-1 truncate">
                     Triggers: {item.matchedTriggers.join(', ')}
                   </p>
-                  <p className="text-[10px] text-amber-500 mt-1">{formatTime(item.createdAt)}</p>
+                  <p className="text-[10px] text-amber-500 mt-1">
+                    <ClientDate iso={item.createdAt} format="datetime" />
+                  </p>
                 </div>
               </div>
             </div>
@@ -98,7 +92,9 @@ export default function ConversationTranscript({ timeline }: ConversationTranscr
                   {item.priority} · {item.status.replace('_', ' ')}
                 </p>
                 <p className="text-xs text-orange-600 mt-1 line-clamp-2">{item.query}</p>
-                <p className="text-[10px] text-orange-500 mt-1">{formatTime(item.createdAt)}</p>
+                <p className="text-[10px] text-orange-500 mt-1">
+                  <ClientDate iso={item.createdAt} format="datetime" />
+                </p>
               </div>
             </div>
           </div>

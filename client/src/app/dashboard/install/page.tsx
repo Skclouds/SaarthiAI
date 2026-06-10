@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Check, Code, Copy } from 'lucide-react';
 import { getUser } from '@/lib/auth';
 import PageHeader from '@/components/ui/PageHeader';
@@ -9,21 +9,32 @@ import { useToast } from '@/components/ui/Toast';
 import { cn } from '@/lib/cn';
 import { MotionPage } from '@/components/ui/motion';
 
-export default function InstallPage() {
-  const user = getUser();
-  const businessId = user?.businessId ?? 'YOUR_BUSINESS_ID';
-  const widgetOrigin =
-    typeof window !== 'undefined' ? window.location.origin : 'https://YOUR_DOMAIN';
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-  const toast = useToast();
+const PLACEHOLDER_SNIPPET = `<script
+  src="https://YOUR_DOMAIN/widget.js"
+  data-business-id="YOUR_BUSINESS_ID"
+  data-api-url="http://localhost:5000"
+></script>`;
 
-  const snippet = `<script
+function buildSnippet(widgetOrigin: string, businessId: string, apiUrl: string): string {
+  return `<script
   src="${widgetOrigin}/widget.js"
   data-business-id="${businessId}"
   data-api-url="${apiUrl}"
 ></script>`;
+}
 
+export default function InstallPage() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+  const toast = useToast();
+  const [snippet, setSnippet] = useState(PLACEHOLDER_SNIPPET);
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    const user = getUser();
+    const businessId = user?.businessId ?? 'YOUR_BUSINESS_ID';
+    const widgetOrigin = window.location.origin;
+    setSnippet(buildSnippet(widgetOrigin, businessId, apiUrl));
+  }, [apiUrl]);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(snippet);

@@ -22,6 +22,7 @@ import DataTable, {
   DataTableRow,
 } from '@/components/ui/DataTable';
 import { ticketPriorityBadge, ticketStatusBadge, formatStatusLabel } from '@/lib/tokens';
+import ClientDate from '@/components/ui/ClientDate';
 import { cn } from '@/lib/cn';
 
 const ALL_STATUSES: Array<TicketStatus | ''> = ['', 'OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'];
@@ -216,7 +217,7 @@ export default function TicketsPage() {
                   </Badge>
                 </DataTableCell>
                 <DataTableCell className="hidden sm:table-cell text-navy-500 whitespace-nowrap">
-                  {new Date(ticket.createdAt).toLocaleDateString()}
+                  <ClientDate iso={ticket.createdAt} />
                 </DataTableCell>
               </DataTableRow>
             ))}
@@ -260,7 +261,7 @@ export default function TicketsPage() {
                         </div>
                         <p className="text-caption text-navy-600 line-clamp-2">{ticket.query}</p>
                         <p className="text-[11px] text-navy-400 mt-2">
-                          {new Date(ticket.createdAt).toLocaleDateString()}
+                          <ClientDate iso={ticket.createdAt} />
                         </p>
                       </motion.button>
                     ))

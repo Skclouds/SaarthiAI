@@ -15,17 +15,8 @@ import DataTable, {
   DataTableRow,
 } from '@/components/ui/DataTable';
 import { documentStatusBadge, formatStatusLabel } from '@/lib/tokens';
+import ClientDate from '@/components/ui/ClientDate';
 import { cn } from '@/lib/cn';
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
 
 function formatType(fileType: string): string {
   return fileType.toUpperCase();
@@ -114,7 +105,7 @@ export default function DocumentTable({
                 </Badge>
               </DataTableCell>
               <DataTableCell className="hidden md:table-cell text-slate-500 whitespace-nowrap">
-                {formatDate(doc.createdAt)}
+                <ClientDate iso={doc.createdAt} format="datetime" />
               </DataTableCell>
               <DataTableCell align="right">
                 <div className="flex items-center justify-end gap-1">

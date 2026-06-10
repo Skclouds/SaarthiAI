@@ -79,15 +79,13 @@ export default function StatCard({
   const displayValue = (() => {
     if (loading || value === '—') return '—';
     if (!animate || !parsed) return value;
-    const formatted = parsed.suffix === '%' ? count.toString() : count.toLocaleString();
+    const formatted = parsed.suffix === '%' ? count.toString() : count.toLocaleString('en-US');
     return `${parsed.prefix}${formatted}${parsed.suffix}`;
   })();
 
   return (
     <motion.div
-      initial={reduced ? false : { opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.15 }}
+      initial={false}
       whileHover={reduced ? undefined : { opacity: 0.95 }}
       className={cn(
         'dashboard-card relative overflow-hidden p-6 group',

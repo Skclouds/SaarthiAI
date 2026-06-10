@@ -23,18 +23,7 @@ import EmptyState from '@/components/ui/EmptyState';
 import { SkeletonList } from '@/components/ui/Skeleton';
 import { cn } from '@/lib/cn';
 import { MotionPage } from '@/components/ui/motion';
-
-function formatRelative(iso: string): string {
-  const date = new Date(iso);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  if (diffMins < 1) return 'Just now';
-  if (diffMins < 60) return `${diffMins}m ago`;
-  const diffHours = Math.floor(diffMins / 60);
-  if (diffHours < 24) return `${diffHours}h ago`;
-  return date.toLocaleDateString();
-}
+import RelativeTime from '@/components/ui/RelativeTime';
 
 export default function ConversationsPage() {
   const searchParams = useSearchParams();
@@ -188,7 +177,7 @@ export default function ConversationsPage() {
                         <p className="text-caption text-slate-500 truncate">{conv.customerEmail}</p>
                       </div>
                       <span className="text-[11px] text-slate-400 whitespace-nowrap shrink-0">
-                        {formatRelative(conv.lastActivity)}
+                        <RelativeTime iso={conv.lastActivity} />
                       </span>
                     </div>
                     <div className="flex items-center gap-2 mt-2 flex-wrap">
