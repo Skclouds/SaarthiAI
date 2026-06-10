@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SaarthiAI Widget Test</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      max-width: 640px;
+      margin: 60px auto;
+      padding: 0 20px;
+      color: #334155;
+    }
+    h1 { color: #0f172a; }
+    p { line-height: 1.6; }
+    code { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h1>Acme Corp Website</h1>
+  <p>
+    This is a plain static HTML page with no React. The SaarthiAI chat widget should
+    appear as a floating button in the bottom-right corner.
+  </p>
+  <p>
+    Edit the <code>data-business-id</code> and <code>data-api-url</code> below to match
+    your local setup, then open this file via a local server (not <code>file://</code>).
+  </p>
+
+  <!-- SaarthiAI Widget -->
+  <script
+    src="http://localhost:3000/widget.js"
+    data-business-id="PASTE_YOUR_BUSINESS_ID"
+    data-api-url="http://localhost:5000"
+  ></script>
+</body>
+</html>

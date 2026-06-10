@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #F8FAFC;
+  --foreground: #0F172A;
+  --surface: #FFFFFF;
+  --surface-muted: #F1F5F9;
+  --border: #E2E8F0;
+  --border-muted: #F1F5F9;
+  --navy: #0F172A;
+  --deep-blue: #1E3A8A;
+  --accent: #3B82F6;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+}
+
+@layer components {
+  .dashboard-page {
+    @apply flex-1 p-6 lg:p-8 xl:p-10 max-w-[1600px] mx-auto w-full;
+  }
+
+  .dashboard-card {
+    @apply bg-surface rounded-2xl border border-border shadow-soft;
+  }
+
+  .glass-panel {
+    @apply bg-white/70 backdrop-blur-xl border border-white/60 shadow-soft;
+  }
+
+  .glass-nav {
+    @apply bg-white/80 backdrop-blur-xl border-b border-border;
+  }
+
+  .input-base {
+    @apply w-full px-4 py-3 rounded-xl border border-border bg-surface text-foreground text-body
+      placeholder:text-navy-400 transition-all duration-200
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/40 focus-visible:border-brand-accent;
+  }
+
+  .premium-gradient-text {
+    @apply bg-gradient-to-r from-brand-deep to-brand-accent bg-clip-text text-transparent;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Chat markdown */
+.chat-markdown {
+  @apply text-sm leading-relaxed;
+}
+
+.chat-markdown h1,
+.chat-markdown h2,
+.chat-markdown h3 {
+  @apply font-semibold text-navy-900 mt-3 mb-1.5;
+}
+
+.chat-markdown h1 { @apply text-base; }
+.chat-markdown h2 { @apply text-sm; }
+.chat-markdown h3 { @apply text-sm; }
+
+.chat-markdown p { @apply mb-2 last:mb-0; }
+.chat-markdown ul, .chat-markdown ol { @apply mb-2 pl-4 space-y-0.5; }
+.chat-markdown ul { @apply list-disc; }
+.chat-markdown ol { @apply list-decimal; }
+.chat-markdown li { @apply text-navy-600; }
+.chat-markdown strong { @apply font-semibold text-navy-900; }
+.chat-markdown code { @apply px-1.5 py-0.5 rounded-md bg-navy-100 text-xs font-mono; }
+.chat-markdown pre { @apply my-2 p-3 rounded-xl bg-navy-100 overflow-x-auto text-xs; }
+.chat-markdown blockquote { @apply border-l-2 border-brand-accent/40 pl-3 my-2 text-navy-500 italic; }
+
+.chat-source-card {
+  @apply p-4 rounded-2xl bg-surface border border-border shadow-soft;
+}
