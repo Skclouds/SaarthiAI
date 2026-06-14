@@ -40,7 +40,7 @@ export default function CreateTicketModal({ onClose, onCreate }: CreateTicketMod
     setError('');
     try {
       await onCreate({ customerName, email, query, priority });
-      toast.success('Ticket created');
+      toast.success('Task created');
       onClose();
     } catch (err: unknown) {
       const msg =
@@ -57,7 +57,7 @@ export default function CreateTicketModal({ onClose, onCreate }: CreateTicketMod
       <MotionOverlay onClose={onClose}>
         <MotionModal className="bg-surface rounded-3xl shadow-elevated w-full max-w-md">
           <div className="flex items-center justify-between px-6 py-5 border-b border-border-muted">
-            <h2 className="text-section-title text-navy-900">Create ticket</h2>
+            <h2 className="text-section-title text-navy-900">Create training task</h2>
             <button
               type="button"
               onClick={onClose}
@@ -73,7 +73,7 @@ export default function CreateTicketModal({ onClose, onCreate }: CreateTicketMod
 
           <form onSubmit={handleSubmit} className="p-6 space-y-5">
             <div>
-              <label className="block text-section-title text-navy-700 mb-2">Customer name</label>
+              <label className="block text-section-title text-navy-700 mb-2">Learner name</label>
               <input required value={customerName} onChange={(e) => setCustomerName(e.target.value)} className="input-base" />
             </div>
             <div>
@@ -93,7 +93,7 @@ export default function CreateTicketModal({ onClose, onCreate }: CreateTicketMod
               </select>
             </div>
             <Button type="submit" disabled={loading} className="w-full" size="lg">
-              {loading ? 'Creating…' : 'Create ticket'}
+              {loading ? 'Creating…' : 'Create task'}
             </Button>
           </form>
         </MotionModal>

@@ -62,7 +62,7 @@ export default function KnowledgeBasePage() {
     <MotionPage className="dashboard-page">
       <PageHeader
         icon={BookOpen}
-        title="Knowledge base"
+        title="Knowledge Hub"
         description="Upload documents to power your AI assistant with business-specific knowledge."
         actions={
           <Button variant="secondary" size="sm" onClick={() => loadDocuments(true)} loading={refreshing}>

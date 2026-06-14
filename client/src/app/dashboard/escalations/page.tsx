@@ -103,8 +103,8 @@ export default function EscalationsPage() {
     <MotionPage className="dashboard-page">
       <PageHeader
         icon={AlertTriangle}
-        title="Escalations"
-        description="Open tickets grouped by priority from chat escalation triggers."
+        title="Risk Actions"
+        description="Learners flagged as at-risk, grouped by priority from readiness gaps."
         actions={
           <Button variant="secondary" size="sm" onClick={() => load(true)} loading={refreshing}>
             Refresh
@@ -124,7 +124,7 @@ export default function EscalationsPage() {
       ) : !tickets ? (
         <EmptyState
           icon={AlertTriangle}
-          title="Failed to load escalations"
+          title="Failed to load risk actions"
           description="Check your connection and try again."
           action={{ label: 'Retry', onClick: () => load() }}
         />
@@ -167,7 +167,7 @@ export default function EscalationsPage() {
                 <div className="flex-1 p-3 space-y-2.5 overflow-y-auto max-h-[500px]">
                   {tickets[priority].length === 0 ? (
                     <p className="text-caption text-slate-400 text-center py-10">
-                      No {label.toLowerCase()} tickets
+                      No {label.toLowerCase()} priority learners
                     </p>
                   ) : (
                     tickets[priority].map((ticket) => (

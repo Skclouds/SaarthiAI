@@ -18,10 +18,11 @@ export async function fetchPublicBotConfig(businessId: string): Promise<PublicBo
 export async function submitChatFeedback(
   messageId: string,
   rating: 'UP' | 'DOWN',
+  businessId: string,
 ): Promise<{ messageId: string; rating: 'UP' | 'DOWN' }> {
   const { data } = await publicApi.post<{ messageId: string; rating: 'UP' | 'DOWN' }>(
     '/chat/feedback',
-    { messageId, rating },
+    { messageId, rating, businessId },
   );
   return data;
 }

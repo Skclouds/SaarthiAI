@@ -2,13 +2,16 @@ import { Router } from 'express';
 import { body, query } from 'express-validator';
 import * as chatController from '../controllers/chat.controller';
 import { validate } from '../middleware/validate';
+import { mongoIdBody, mongoIdQuery, optionalMongoIdBody } from '../middleware/validators';
+
+const MAX_CHAT_MESSAGE_LENGTH = 2000;
 
 const router = Router();
 
 router.get(
   '/suggested-questions',
   validate([
-    query('businessId').notEmpty().withMessage('businessId is required'),
+    mongoIdQuery('businessId'),
   ]),
   chatController.getSuggestedQuestions,
 );
@@ -16,7 +19,7 @@ router.get(
 router.get(
   '/config',
   validate([
-    query('businessId').notEmpty().withMessage('businessId is required'),
+    mongoIdQuery('businessId'),
   ]),
   chatController.getPublicConfig,
 );
@@ -24,7 +27,8 @@ router.get(
 router.post(
   '/feedback',
   validate([
-    body('messageId').notEmpty().withMessage('messageId is required'),
+    mongoIdBody('businessId'),
+    mongoIdBody('messageId'),
     body('rating').isIn(['UP', 'DOWN']).withMessage('rating must be UP or DOWN'),
   ]),
   chatController.submitFeedback,
@@ -32,13 +36,16 @@ router.post(
 
 router.post(
   '/',
-  chatController.logChatRequest,
   chatController.validateChatPost([
-    body('businessId').notEmpty().withMessage('businessId is required'),
-    body('customerName').trim().notEmpty().withMessage('Customer name is required'),
-    body('customerEmail').isEmail().withMessage('Valid email is required'),
-    body('message').trim().notEmpty().withMessage('Message is required'),
-    body('conversationId').optional({ values: 'null' }).isString().withMessage('conversationId must be a string'),
+    mongoIdBody('businessId'),
+    body('customerName').trim().notEmpty().isLength({ max: 120 }).withMessage('Customer name is required'),
+    body('customerEmail').isEmail().isLength({ max: 254 }).withMessage('Valid email is required'),
+    body('message')
+      .trim()
+      .notEmpty()
+      .isLength({ max: MAX_CHAT_MESSAGE_LENGTH })
+      .withMessage(`Message must be at most ${MAX_CHAT_MESSAGE_LENGTH} characters`),
+    optionalMongoIdBody('conversationId'),
   ]),
   chatController.sendMessage,
 );

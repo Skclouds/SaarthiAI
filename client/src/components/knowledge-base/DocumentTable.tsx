@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { BookOpen, Loader2, RefreshCw, Trash2 } from 'lucide-react';
+import { BookOpen, GraduationCap, Loader2, RefreshCw, Trash2 } from 'lucide-react';
 import { deleteDocument, reindexDocument } from '@/lib/documents';
+import { generateAssessment } from '@/lib/assessments';
 import { KnowledgeDocument } from '@/types/document';
 import Badge from '@/components/ui/Badge';
 import EmptyState from '@/components/ui/EmptyState';
@@ -66,6 +67,21 @@ export default function DocumentTable({
     }
   };
 
+  const handleGenerate = async (id: string) => {
+    setActionId(id);
+    try {
+      await generateAssessment(id);
+      toast.success('Assessment generated — view it on the Assessments page');
+    } catch (err) {
+      const message =
+        (err as { response?: { data?: { error?: string } } })?.response?.data?.error ||
+        'Failed to generate assessment';
+      toast.error(message);
+    } finally {
+      setActionId(null);
+    }
+  };
+
   if (documents.length === 0) {
     return (
       <EmptyState
@@ -109,6 +125,28 @@ export default function DocumentTable({
               </DataTableCell>
               <DataTableCell align="right">
                 <div className="flex items-center justify-end gap-1">
+                  {doc.status === 'READY' && (
+                    <button
+                      type="button"
+                      onClick={() => handleGenerate(doc.id)}
+                      disabled={busy}
+                      title="Generate assessment"
+                      aria-label={`Generate assessment from ${doc.filename}`}
+                      className={cn(
+                        'inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-caption font-medium',
+                        'text-brand-deep bg-brand-muted hover:bg-brand-accent/15',
+                        'disabled:opacity-40 disabled:pointer-events-none motion-safe-transition',
+                        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/50',
+                      )}
+                    >
+                      {busy ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <GraduationCap className="w-4 h-4" />
+                      )}
+                      <span className="hidden sm:inline">Generate assessment</span>
+                    </button>
+                  )}
                   <button
                     type="button"
                     onClick={() => handleReindex(doc.id)}

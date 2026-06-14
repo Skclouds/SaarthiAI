@@ -4,8 +4,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import {
   AlertTriangle,
+  Bot,
   ChevronLeft,
-  MessageSquare,
   Search,
   Ticket,
 } from 'lucide-react';
@@ -102,9 +102,9 @@ export default function ConversationsPage() {
     <MotionPage className="flex-1 flex flex-col h-[calc(100vh-4rem)] lg:h-auto lg:min-h-0">
       <div className="px-6 lg:px-8 pt-6 lg:pt-8 pb-4 shrink-0">
         <PageHeader
-          icon={MessageSquare}
-          title="Conversations"
-          description="Search and review customer chat history."
+          icon={Bot}
+          title="AI Mentor"
+          description="AI mentor conversations grounded in your SOPs and training material."
           actions={
             <Button variant="secondary" size="sm" onClick={() => load(true)} loading={refreshing}>
               Refresh
@@ -145,12 +145,12 @@ export default function ConversationsPage() {
             <SkeletonList rows={8} />
           ) : conversations.length === 0 ? (
             <EmptyState
-              icon={MessageSquare}
-              title={activeSearch ? 'No conversations match your search' : 'No conversations yet'}
+              icon={Bot}
+              title={activeSearch ? 'No conversations match your search' : 'No mentor conversations yet'}
               description={
                 activeSearch
                   ? 'Try a different search term or clear the filter.'
-                  : 'Conversations appear here when customers chat via your widget or demo page.'
+                  : 'Conversations appear here when learners chat with your AI mentor via the widget or demo page.'
               }
               action={activeSearch ? { label: 'Clear search', onClick: clearSearch } : undefined}
               className="border-0 shadow-none rounded-none h-full"
@@ -236,7 +236,7 @@ export default function ConversationsPage() {
         >
           {!selectedId ? (
             <EmptyState
-              icon={MessageSquare}
+              icon={Bot}
               title="Select a conversation"
               description="Choose a conversation from the list to view the full transcript and timeline."
               className="border-0 shadow-none rounded-none h-full"

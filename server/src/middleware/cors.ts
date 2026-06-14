@@ -1,9 +1,18 @@
+import { NextFunction, Request, Response } from 'express';
 import cors, { CorsOptions } from 'cors';
-
-const LOCAL_DEV_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000'];
 
 function normalizeOrigin(origin: string): string {
   return origin.replace(/\/$/, '');
+}
+
+/** Any localhost port — Next.js may use 3001+ when 3000 is taken. */
+function isLocalDevOrigin(origin: string): boolean {
+  try {
+    const url = new URL(origin);
+    return url.protocol === 'http:' && (url.hostname === 'localhost' || url.hostname === '127.0.0.1');
+  } catch {
+    return false;
+  }
 }
 
 /** Read allowed admin origins from env on each call — never baked in at import time. */
@@ -15,13 +24,6 @@ export function getAdminAllowedOrigins(): string[] {
     origins.add(normalizeOrigin(clientUrl));
   }
 
-  const isDevelopment = process.env.NODE_ENV !== 'production';
-  if (isDevelopment) {
-    for (const local of LOCAL_DEV_ORIGINS) {
-      origins.add(local);
-    }
-  }
-
   return [...origins];
 }
 
@@ -30,6 +32,9 @@ function isAdminOriginAllowed(origin: string | undefined): boolean {
     return true;
   }
   const normalized = normalizeOrigin(origin);
+  if (process.env.NODE_ENV !== 'production' && isLocalDevOrigin(normalized)) {
+    return true;
+  }
   return getAdminAllowedOrigins().some((allowed) => normalizeOrigin(allowed) === normalized);
 }
 
@@ -63,6 +68,7 @@ export const publicChatCors = cors({
 });
 
 export const adminPreflightCors = cors(adminCorsOptions);
+
 export const publicChatPreflightCors = cors({
   origin: true,
   credentials: false,
@@ -70,3 +76,26 @@ export const publicChatPreflightCors = cors({
   allowedHeaders: ['Content-Type'],
   optionsSuccessStatus: 204,
 });
+
+export function isPublicAssessmentPath(path: string): boolean {
+  return /\/public$/.test(path) || /\/submit$/.test(path);
+}
+
+/**
+ * Assessment routes — public learner endpoints allow any origin; admin endpoints use CLIENT_URL.
+ */
+export function assessmentsCors(req: Request, res: Response, next: NextFunction): void {
+  if (isPublicAssessmentPath(req.path)) {
+    publicChatCors(req, res, next);
+    return;
+  }
+  adminCors(req, res, next);
+}
+
+export function assessmentsPreflightCors(req: Request, res: Response, next: NextFunction): void {
+  if (isPublicAssessmentPath(req.path)) {
+    publicChatPreflightCors(req, res, next);
+    return;
+  }
+  adminPreflightCors(req, res, next);
+}

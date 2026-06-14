@@ -41,9 +41,12 @@ export default function LoginPage() {
       setAuth(data.token, data.user);
       router.replace('/dashboard');
     } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { error?: string } }; code?: string; message?: string };
       const message =
-        (err as { response?: { data?: { error?: string } } })?.response?.data?.error ||
-        'Login failed. Please try again.';
+        axiosErr.response?.data?.error ||
+        (axiosErr.code === 'ERR_NETWORK' || !axiosErr.response
+          ? 'Unable to reach the server. Ensure the backend is running on port 5000.'
+          : 'Login failed. Please try again.');
       setError(message);
     } finally {
       setLoading(false);

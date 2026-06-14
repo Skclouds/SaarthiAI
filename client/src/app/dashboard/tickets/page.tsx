@@ -110,8 +110,8 @@ export default function TicketsPage() {
     <MotionPage className="dashboard-page">
       <PageHeader
         icon={TicketIcon}
-        title="Ticket management"
-        description="Track, prioritize, and resolve customer support requests."
+        title="Training Tasks"
+        description="Retraining and learning actions assigned from readiness gaps."
         actions={
           <>
             <div className="flex rounded-xl border border-border p-1 bg-surface-muted/50">
@@ -141,7 +141,7 @@ export default function TicketsPage() {
             </Button>
             <Button size="sm" onClick={() => setShowCreate(true)}>
               <Plus className="w-4 h-4" />
-              New ticket
+              New task
             </Button>
           </>
         }
@@ -179,14 +179,14 @@ export default function TicketsPage() {
       ) : tickets.length === 0 ? (
         <EmptyState
           icon={TicketIcon}
-          title="No tickets yet"
-          description="Create a ticket manually or wait for escalations from chat conversations."
-          action={{ label: 'Create ticket', onClick: () => setShowCreate(true) }}
+          title="No training tasks yet"
+          description="Tasks are created automatically from readiness gaps, or you can add one manually."
+          action={{ label: 'Create task', onClick: () => setShowCreate(true) }}
         />
       ) : view === 'table' ? (
         <DataTable>
           <DataTableHead>
-            <DataTableHeaderCell>Customer</DataTableHeaderCell>
+            <DataTableHeaderCell>Learner</DataTableHeaderCell>
             <DataTableHeaderCell className="hidden md:table-cell">Query</DataTableHeaderCell>
             <DataTableHeaderCell>Priority</DataTableHeaderCell>
             <DataTableHeaderCell>Status</DataTableHeaderCell>
@@ -240,7 +240,7 @@ export default function TicketsPage() {
                 </div>
                 <div className="flex-1 p-3 space-y-3 overflow-y-auto max-h-[520px]">
                   {columnTickets.length === 0 ? (
-                    <p className="text-caption text-navy-400 text-center py-8">No tickets</p>
+                    <p className="text-caption text-navy-400 text-center py-8">No tasks</p>
                   ) : (
                     columnTickets.map((ticket, i) => (
                       <motion.button

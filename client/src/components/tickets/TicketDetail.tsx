@@ -24,7 +24,7 @@ export default function TicketDetail({ ticket, onClose, onStatusChange, updating
       <MotionOverlay onClose={onClose}>
         <MotionModal className="bg-surface rounded-3xl shadow-elevated w-full max-w-lg max-h-[90vh] overflow-y-auto">
           <div className="flex items-center justify-between px-6 py-5 border-b border-border-muted sticky top-0 bg-surface z-10">
-            <h2 className="text-section-title text-navy-900">Ticket details</h2>
+            <h2 className="text-section-title text-navy-900">Task details</h2>
             <button
               type="button"
               onClick={onClose}
@@ -42,7 +42,7 @@ export default function TicketDetail({ ticket, onClose, onStatusChange, updating
             </div>
 
             <div>
-              <p className="text-caption font-medium text-navy-500 mb-1">Customer</p>
+              <p className="text-caption font-medium text-navy-500 mb-1">Learner</p>
               <p className="text-body text-navy-900">{ticket.customerName}</p>
               <p className="text-body text-navy-500">{ticket.email}</p>
             </div>

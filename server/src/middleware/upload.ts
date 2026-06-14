@@ -5,20 +5,27 @@ import { AppError } from './errorHandler';
 
 const storage = multer.memoryStorage();
 
+const BLOCKED_EXTENSIONS = /\.(exe|bat|cmd|com|msi|js|jsx|ts|tsx|sh|php|py|rb|jar|dll|scr|vbs|ps1|html|htm)$/i;
+
 const upload = multer({
   storage,
-  limits: { fileSize: env.maxUploadBytes },
+  limits: { fileSize: env.maxUploadBytes, files: 1 },
   fileFilter: (_req, file, cb) => {
-    const allowed =
-      [
-        'application/pdf',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'text/plain',
-        'text/markdown',
-      ].includes(file.mimetype) ||
-      /\.(pdf|docx|txt|md)$/i.test(file.originalname);
+    if (BLOCKED_EXTENSIONS.test(file.originalname)) {
+      cb(new Error('File type not allowed'));
+      return;
+    }
 
-    if (allowed) {
+    const allowedMime = [
+      'application/pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'text/plain',
+      'text/markdown',
+    ].includes(file.mimetype);
+
+    const allowedExt = /\.(pdf|docx|txt|md)$/i.test(file.originalname);
+
+    if (allowedMime && allowedExt) {
       cb(null, true);
     } else {
       cb(new Error('Only PDF, DOCX, TXT, and MD files are allowed'));

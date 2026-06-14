@@ -57,11 +57,37 @@ export interface AnalyticsResult extends CsatMetrics {
   };
 }
 
+export function emptyAnalyticsResult(): AnalyticsResult {
+  return {
+    avgResponseTimeMs: 0,
+    resolutionRate: 0,
+    escalationRate: 0,
+    thumbsUp: 0,
+    thumbsDown: 0,
+    csat: 0,
+    timeSeries: [],
+    kbMetrics: {
+      mostReferencedDocuments: [],
+      failedQueriesCount: 0,
+      unansweredQuestions: [],
+    },
+  };
+}
+
 function parseDateRange(from?: string, to?: string): { start: Date; end: Date } {
   const end = to ? new Date(to) : new Date();
   const start = from
     ? new Date(from)
     : new Date(end.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+    const fallbackEnd = new Date();
+    const fallbackStart = new Date(fallbackEnd.getTime() - 30 * 24 * 60 * 60 * 1000);
+    fallbackStart.setHours(0, 0, 0, 0);
+    fallbackEnd.setHours(23, 59, 59, 999);
+    return { start: fallbackStart, end: fallbackEnd };
+  }
+
   start.setHours(0, 0, 0, 0);
   end.setHours(23, 59, 59, 999);
   return { start, end };

@@ -9,10 +9,11 @@ type FeedbackState = 'idle' | 'UP' | 'DOWN' | 'thanks';
 
 interface MessageFeedbackProps {
   messageId: string;
+  businessId: string;
   className?: string;
 }
 
-export default function MessageFeedback({ messageId, className }: MessageFeedbackProps) {
+export default function MessageFeedback({ messageId, businessId, className }: MessageFeedbackProps) {
   const [state, setState] = useState<FeedbackState>('idle');
   const [submitting, setSubmitting] = useState(false);
 
@@ -22,7 +23,7 @@ export default function MessageFeedback({ messageId, className }: MessageFeedbac
     if (isLocked || submitting) return;
     setSubmitting(true);
     try {
-      await submitChatFeedback(messageId, rating);
+      await submitChatFeedback(messageId, rating, businessId);
       setState('thanks');
     } catch {
       setState('idle');

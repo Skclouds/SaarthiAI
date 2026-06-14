@@ -16,3 +16,5 @@ export { Ticket, ITicket, TicketPriority, TicketStatus } from './Ticket';
 export { EscalationEvent, IEscalationEvent } from './EscalationEvent';
 export { ChatSourceLog, IChatSourceLog } from './ChatSourceLog';
 export { Notification, INotification, NotificationType } from './Notification';
+export { Assessment, IAssessment, IAssessmentQuestion } from './Assessment';
+export { Attempt, IAttempt, IAttemptAnswer, IPerTopic, ReadinessStatus } from './Attempt';

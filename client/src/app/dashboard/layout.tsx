@@ -22,7 +22,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           />
           <div className="flex-1 flex flex-col min-h-0 min-w-0">
             <TopBar onMenuClick={() => setSidebarOpen(true)} />
-            <main className="flex-1 overflow-auto">{children}</main>
+            <main className="flex-1 overflow-auto" aria-label="Dashboard content">{children}</main>
           </div>
         </div>
       </ToastProvider>

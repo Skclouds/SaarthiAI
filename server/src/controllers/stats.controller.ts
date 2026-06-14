@@ -25,8 +25,14 @@ export async function analytics(req: Request, res: Response, next: NextFunction)
 
     const from = req.query.from ? String(req.query.from) : undefined;
     const to = req.query.to ? String(req.query.to) : undefined;
-    const analytics = await statsService.getAnalytics(req.user.businessId, from, to);
-    res.json({ analytics });
+
+    try {
+      const analytics = await statsService.getAnalytics(req.user.businessId, from, to);
+      res.json({ analytics });
+    } catch (err) {
+      console.error('[Analytics] getAnalytics failed:', err);
+      res.json({ analytics: statsService.emptyAnalyticsResult() });
+    }
   } catch (err) {
     next(err);
   }

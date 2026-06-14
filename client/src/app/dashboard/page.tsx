@@ -1,193 +1,339 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import {
-  Activity,
-  AlertTriangle,
   ArrowRight,
   BookOpen,
-  BarChart3,
-  Bot,
+  GraduationCap,
   MessageSquare,
+  ShieldCheck,
   Sparkles,
-  Ticket,
   ThumbsUp,
-  TrendingUp,
+  Upload,
 } from 'lucide-react';
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 import { useAuthUser } from '@/hooks/useAuthUser';
+import { fetchReadinessAttempts, fetchReadinessOverview } from '@/lib/assessments';
 import { fetchOverviewStats } from '@/lib/stats';
+import { AttemptSummary, ReadinessOverview } from '@/types/assessment';
 import { OverviewStats } from '@/types/stats';
-import StatCard from '@/components/ui/StatCard';
-import { SkeletonStatGrid } from '@/components/ui/Skeleton';
+import Badge from '@/components/ui/Badge';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { MotionPage, MotionDiv } from '@/components/ui/motion';
 import { cn } from '@/lib/cn';
+import { readinessStatusBadge, readinessStatusLabel } from '@/lib/tokens';
 
-const STAT_CARDS = [
-  { key: 'totalConversations' as const, label: 'Conversations', icon: MessageSquare, variant: 'accent' as const, format: (v: number) => v.toString() },
-  { key: 'openTickets' as const, label: 'Open tickets', icon: Ticket, variant: 'navy' as const, format: (v: number) => v.toString() },
-  { key: 'resolvedTickets' as const, label: 'Resolved', icon: TrendingUp, variant: 'success' as const, format: (v: number) => v.toString() },
-  { key: 'escalatedTickets' as const, label: 'Escalated', icon: AlertTriangle, variant: 'warning' as const, format: (v: number) => v.toString() },
-  { key: 'aiResolutionRate' as const, label: 'AI resolution', icon: Sparkles, variant: 'accent' as const, format: (v: number) => `${v}%` },
-  { key: 'csat' as const, label: 'Answer accuracy (CSAT)', icon: ThumbsUp, variant: 'success' as const, format: (v: number) => `${v}%` },
+const READY_COLOR = '#10b981';
+const AT_RISK_COLOR = '#f59e0b';
+
+const QUICK_ACTIONS = [
+  {
+    href: '/dashboard/knowledge-base',
+    title: 'Upload SOP',
+    description: 'Add training documents to your knowledge base',
+    icon: Upload,
+    color: 'bg-brand-muted text-brand-accent',
+  },
+  {
+    href: '/dashboard/knowledge-base',
+    title: 'Generate assessment',
+    description: 'Create a competency quiz from any document',
+    icon: GraduationCap,
+    color: 'bg-navy-100 text-navy-700',
+  },
+  {
+    href: '/dashboard/readiness',
+    title: 'View readiness',
+    description: 'See full learner insights and attempt history',
+    icon: ShieldCheck,
+    color: 'bg-success-50 text-success-600',
+  },
 ];
 
-const QUICK_LINKS = [
-  { href: '/dashboard/knowledge-base', title: 'Knowledge base', description: 'Train your AI on company docs', icon: BookOpen, color: 'bg-brand-muted text-brand-accent' },
-  { href: '/dashboard/tickets', title: 'Ticket queue', description: 'Resolve and prioritize issues', icon: Ticket, color: 'bg-navy-100 text-navy-700' },
-  { href: '/dashboard/analytics', title: 'Analytics', description: 'Executive performance reports', icon: BarChart3, color: 'bg-success-50 text-success-600' },
-];
+const PREVIEW_ATTEMPTS = 5;
 
 export default function DashboardPage() {
   const user = useAuthUser();
-  const [stats, setStats] = useState<OverviewStats | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [overview, setOverview] = useState<ReadinessOverview | null>(null);
+  const [attempts, setAttempts] = useState<AttemptSummary[]>([]);
+  const [supportStats, setSupportStats] = useState<OverviewStats | null>(null);
+  const [readinessLoading, setReadinessLoading] = useState(true);
+  const [supportLoading, setSupportLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([fetchReadinessOverview(), fetchReadinessAttempts()])
+      .then(([ov, at]) => {
+        setOverview(ov);
+        setAttempts(at);
+      })
+      .catch(() => {
+        setOverview(null);
+        setAttempts([]);
+      })
+      .finally(() => setReadinessLoading(false));
+  }, []);
 
   useEffect(() => {
     fetchOverviewStats()
-      .then(setStats)
-      .catch(() => setStats(null))
-      .finally(() => setLoading(false));
+      .then(setSupportStats)
+      .catch(() => setSupportStats(null))
+      .finally(() => setSupportLoading(false));
   }, []);
+
+  const pendingRetraining = useMemo(
+    () => attempts.filter((a) => a.status !== 'READY' && a.gaps.length > 0).length,
+    [attempts],
+  );
+
+  const readinessRate = useMemo(() => {
+    if (!overview || overview.learnersAssessed === 0) return 0;
+    return Math.round((overview.readyCount / overview.learnersAssessed) * 100);
+  }, [overview]);
+
+  const chartData = overview
+    ? [
+        { name: 'Ready', value: overview.readyCount, fill: READY_COLOR },
+        { name: 'At risk', value: overview.atRiskCount, fill: AT_RISK_COLOR },
+      ]
+    : [];
+
+  const hasChartData = overview ? overview.readyCount + overview.atRiskCount > 0 : false;
+  const previewAttempts = attempts.slice(0, PREVIEW_ATTEMPTS);
 
   return (
     <MotionPage className="dashboard-page">
       <MotionDiv className="mb-10">
-        <p className="text-caption font-medium text-brand-accent uppercase tracking-wider mb-2">Overview</p>
+        <p className="text-caption font-medium text-brand-accent uppercase tracking-wider mb-2">
+          From Knowledge to Readiness.
+        </p>
         <h1 className="text-display text-navy-900 text-balance">
           Good to see you{user?.businessName ? `, ${user.businessName}` : ''}
         </h1>
         <p className="text-body text-navy-500 mt-2 max-w-2xl">
-          Monitor AI performance, track support volume, and keep customers happy — all in one place.
+          Turn knowledge into measurable readiness — train, assess, and prove competency in one place.
         </p>
       </MotionDiv>
 
-      {loading ? (
-        <SkeletonStatGrid count={6} />
+      {readinessLoading ? (
+        <Skeleton className="h-44 w-full rounded-2xl mb-6" />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-5 mb-10">
-          {STAT_CARDS.map(({ key, label, icon, variant, format }, i) => (
-            <StatCard
-              key={key}
-              index={i}
-              label={label}
-              icon={icon}
-              variant={variant}
-              value={stats ? format(stats[key]) : '—'}
-              loading={!stats}
-              trend={
-                key === 'csat' && stats
-                  ? `↑ ${stats.thumbsUp}  ↓ ${stats.thumbsDown}`
-                  : undefined
-              }
-            />
-          ))}
-        </div>
+        <MotionDiv className="dashboard-card p-6 mb-6 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-brand-accent/10 via-transparent to-success-500/5" />
+          <div className="relative grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6 items-center">
+            <div>
+              <p className="text-caption font-semibold uppercase tracking-wider text-brand-accent mb-2">
+                Overall readiness
+              </p>
+              <div className="flex items-end gap-3">
+                <p className="text-5xl font-semibold text-navy-900 tabular-nums">
+                  {overview ? `${readinessRate}%` : '—'}
+                </p>
+                <p className="text-body text-navy-500 pb-2">
+                  {overview?.learnersAssessed
+                    ? `${overview.learnersAssessed} learner${overview.learnersAssessed === 1 ? '' : 's'} assessed`
+                    : 'No assessments yet'}
+                </p>
+              </div>
+              <p className="text-caption text-navy-500 mt-2 max-w-lg">
+                Compliance status:{' '}
+                <span
+                  className={cn(
+                    'font-semibold',
+                    readinessRate >= 80 ? 'text-success-600' : readinessRate >= 50 ? 'text-warning-600' : 'text-navy-600',
+                  )}
+                >
+                  {overview && overview.learnersAssessed > 0
+                    ? readinessRate >= 80
+                      ? 'On track'
+                      : readinessRate >= 50
+                        ? 'Needs attention'
+                        : 'At risk'
+                    : 'Pending data'}
+                </span>
+              </p>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-3 w-full lg:w-auto">
+              {[
+                { label: 'People ready', value: overview?.readyCount ?? '—' },
+                { label: 'Need attention', value: overview?.atRiskCount ?? '—' },
+                { label: 'High risk', value: overview ? pendingRetraining : '—' },
+                { label: 'Avg competency', value: overview ? `${overview.avgCompetency}%` : '—' },
+              ].map(({ label, value }) => (
+                <div
+                  key={label}
+                  className="rounded-xl border border-border/60 bg-surface/80 px-3 py-2.5 min-w-[7rem]"
+                >
+                  <p className="text-[11px] text-navy-500 uppercase tracking-wide">{label}</p>
+                  <p className="text-xl font-semibold text-navy-900 tabular-nums mt-0.5">{value}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </MotionDiv>
       )}
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-10">
-        {/* AI Performance */}
-        <MotionDiv className="xl:col-span-2 dashboard-card p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-brand-muted flex items-center justify-center">
-                <Bot className="w-5 h-5 text-brand-accent" />
-              </div>
-              <div>
-                <h2 className="text-section-title text-navy-900">AI performance</h2>
-                <p className="text-caption text-navy-500">How your assistant is handling volume</p>
-              </div>
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-10">
+        <MotionDiv className="dashboard-card p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-section-title text-navy-900">Readiness trend</h2>
+              <p className="text-caption text-navy-500">Learner competency distribution</p>
             </div>
-            <Link href="/dashboard/analytics" className="text-caption text-brand-accent hover:text-primary-600 font-medium flex items-center gap-1">
-              View analytics <ArrowRight className="w-3.5 h-3.5" />
+            <Link
+              href="/dashboard/readiness"
+              className="text-caption text-brand-accent hover:text-primary-600 font-medium flex items-center gap-1"
+            >
+              Full insights <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {readinessLoading ? (
+            <Skeleton className="h-48 w-full rounded-xl" />
+          ) : !hasChartData ? (
+            <div className="text-center py-10">
+              <p className="text-body text-navy-500">No assessment attempts yet</p>
+              <p className="text-caption text-navy-400 mt-1">
+                Generate an assessment and share the learner link to start tracking readiness.
+              </p>
+              <Link
+                href="/dashboard/assessments"
+                className="inline-flex items-center gap-1 mt-4 text-caption text-brand-accent hover:text-primary-600 font-medium"
+              >
+                Go to assessments <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          ) : (
+            <div className="h-48">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <XAxis dataKey="name" tick={{ fontSize: 12 }} stroke="#94a3b8" />
+                  <YAxis allowDecimals={false} tick={{ fontSize: 11 }} stroke="#94a3b8" />
+                  <Tooltip cursor={{ fill: 'rgba(148, 163, 184, 0.1)' }} />
+                  <Bar dataKey="value" name="Learners" radius={[6, 6, 0, 0]}>
+                    {chartData.map((entry) => (
+                      <Cell key={entry.name} fill={entry.fill} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </MotionDiv>
+
+        <MotionDiv className="dashboard-card p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-section-title text-navy-900">Recent actions</h2>
+              <p className="text-caption text-navy-500">Latest learner assessment results</p>
+            </div>
+            <Link
+              href="/dashboard/readiness"
+              className="text-caption text-brand-accent hover:text-primary-600 font-medium flex items-center gap-1"
+            >
+              View all <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          {readinessLoading ? (
+            <Skeleton className="h-48 w-full rounded-xl" />
+          ) : previewAttempts.length === 0 ? (
+            <div className="text-center py-10">
+              <p className="text-body text-navy-500">No attempts yet</p>
+              <p className="text-caption text-navy-400 mt-1">
+                Results appear here once learners complete assessments.
+              </p>
+            </div>
+          ) : (
+            <div className="divide-y divide-border/60">
+              {previewAttempts.map((a) => (
+                <div key={a.id} className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0">
+                  <div className="min-w-0">
+                    <p className="text-body font-medium text-navy-900 truncate">{a.learnerName}</p>
+                    <p className="text-caption text-navy-400 truncate">{a.learnerEmail}</p>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <span className="text-body font-semibold tabular-nums text-navy-800">{a.score}%</span>
+                    <Badge className={readinessStatusBadge[a.status]}>
+                      {readinessStatusLabel[a.status]}
+                    </Badge>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </MotionDiv>
+      </div>
+
+      <MotionDiv className="mb-10">
+        <div className="flex items-center gap-2 mb-4">
+          <h2 className="text-section-title text-navy-900">Support activity</h2>
+          <span className="text-caption text-navy-400">AI mentor &amp; task volume</span>
+        </div>
+
+        {supportLoading ? (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-20 rounded-xl" />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { label: 'Resolution rate', value: stats ? `${stats.aiResolutionRate}%` : '—', sub: 'Handled without escalation' },
-              { label: 'Total conversations', value: stats?.totalConversations ?? '—', sub: 'All-time volume' },
-              { label: 'Open tickets', value: stats?.openTickets ?? '—', sub: 'Needs human attention' },
-            ].map((item) => (
-              <div key={item.label} className="rounded-2xl bg-surface-muted/60 border border-border/60 p-5">
-                <p className="text-caption text-navy-500 mb-1">{item.label}</p>
-                <p className="text-2xl font-semibold text-navy-900 tabular-nums">{item.value}</p>
-                <p className="text-caption text-navy-400 mt-1">{item.sub}</p>
+              {
+                label: 'Conversations',
+                value: supportStats?.totalConversations ?? '—',
+                icon: MessageSquare,
+              },
+              {
+                label: 'AI resolution',
+                value: supportStats ? `${supportStats.aiResolutionRate}%` : '—',
+                icon: Sparkles,
+              },
+              {
+                label: 'Answer accuracy',
+                value: supportStats ? `${supportStats.csat}%` : '—',
+                icon: ThumbsUp,
+              },
+              {
+                label: 'Open tasks',
+                value: supportStats?.openTickets ?? '—',
+                icon: BookOpen,
+              },
+            ].map(({ label, value, icon: Icon }) => (
+              <div
+                key={label}
+                className="rounded-2xl bg-surface-muted/60 border border-border/60 p-4 flex items-center gap-3"
+              >
+                <div className="w-9 h-9 rounded-xl bg-navy-100 flex items-center justify-center shrink-0">
+                  <Icon className="w-4 h-4 text-navy-600" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-caption text-navy-500">{label}</p>
+                  <p className="text-lg font-semibold text-navy-900 tabular-nums">{value}</p>
+                </div>
               </div>
             ))}
           </div>
-
-          <div className="mt-6 h-2 rounded-full bg-surface-muted overflow-hidden">
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-brand-deep to-brand-accent transition-[width] duration-500 motion-reduce:transition-none"
-              style={{ width: `${stats?.aiResolutionRate ?? 0}%` }}
-            />
-          </div>
-          <p className="text-caption text-navy-400 mt-2">AI resolution progress</p>
-        </MotionDiv>
-
-        {/* Activity feed */}
-        <MotionDiv className="dashboard-card p-6">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-navy-100 flex items-center justify-center">
-              <Activity className="w-5 h-5 text-navy-600" />
-            </div>
-            <div>
-              <h2 className="text-section-title text-navy-900">Recent activity</h2>
-              <p className="text-caption text-navy-500">Live support signals</p>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            {stats && stats.totalConversations > 0 ? (
-              <>
-                <ActivityItem
-                  icon={MessageSquare}
-                  title={`${stats.totalConversations} conversations`}
-                  desc="Total customer interactions recorded"
-                  color="text-brand-accent bg-brand-muted"
-                />
-                {stats.escalatedTickets > 0 && (
-                  <ActivityItem
-                    icon={AlertTriangle}
-                    title={`${stats.escalatedTickets} escalations`}
-                    desc="Routed for human follow-up"
-                    color="text-warning-600 bg-warning-50"
-                  />
-                )}
-                {stats.resolvedTickets > 0 && (
-                  <ActivityItem
-                    icon={TrendingUp}
-                    title={`${stats.resolvedTickets} resolved`}
-                    desc="Tickets closed successfully"
-                    color="text-success-600 bg-success-50"
-                  />
-                )}
-              </>
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-body text-navy-500">No activity yet</p>
-                <p className="text-caption text-navy-400 mt-1">
-                  Conversations appear when customers use your chat widget
-                </p>
-                <Link
-                  href="/dashboard/install"
-                  className="inline-flex items-center gap-1 mt-4 text-caption text-brand-accent hover:text-primary-600 font-medium"
-                >
-                  Install widget <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-            )}
-          </div>
-        </MotionDiv>
-      </div>
+        )}
+      </MotionDiv>
 
       <MotionDiv>
         <h2 className="text-section-title text-navy-900 mb-4">Quick actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {QUICK_LINKS.map(({ href, title, description, icon: Icon, color }) => (
+          {QUICK_ACTIONS.map(({ href, title, description, icon: Icon, color }) => (
             <Link
-              key={href}
+              key={title}
               href={href}
               prefetch
               className={cn(
@@ -209,30 +355,5 @@ export default function DashboardPage() {
         </div>
       </MotionDiv>
     </MotionPage>
-  );
-}
-
-function ActivityItem({
-  icon: Icon,
-  title,
-  desc,
-  color,
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  desc: string;
-  color: string;
-}) {
-  const [bg, text] = color.split(' ').filter((c) => c.startsWith('bg-') || c.startsWith('text-'));
-  return (
-    <div className="flex items-start gap-3">
-      <div className={cn('w-9 h-9 rounded-xl flex items-center justify-center shrink-0', bg)}>
-        <Icon className={cn('w-4 h-4', text)} />
-      </div>
-      <div className="min-w-0">
-        <p className="text-body font-medium text-navy-900">{title}</p>
-        <p className="text-caption text-navy-500">{desc}</p>
-      </div>
-    </div>
   );
 }

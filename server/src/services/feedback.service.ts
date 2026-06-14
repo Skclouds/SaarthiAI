@@ -5,9 +5,10 @@ import { Conversation, Message, MessageRating } from '../models';
 export async function submitMessageFeedback(
   messageId: string,
   rating: MessageRating,
+  businessId: string,
 ): Promise<{ messageId: string; rating: MessageRating }> {
-  if (!Types.ObjectId.isValid(messageId)) {
-    throw new AppError('Invalid message id', 400);
+  if (!Types.ObjectId.isValid(messageId) || !Types.ObjectId.isValid(businessId)) {
+    throw new AppError('Invalid id', 400);
   }
 
   const message = await Message.findById(messageId);
@@ -18,6 +19,10 @@ export async function submitMessageFeedback(
   const conversation = await Conversation.findById(message.conversationId);
   if (!conversation) {
     throw new AppError('Conversation not found', 404);
+  }
+
+  if (!conversation.businessId.equals(new Types.ObjectId(businessId))) {
+    throw new AppError('Forbidden', 403);
   }
 
   if (message.rating) {

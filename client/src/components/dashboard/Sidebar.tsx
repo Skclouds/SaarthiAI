@@ -3,32 +3,32 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import { ChevronLeft, Loader2, MessageCircle } from 'lucide-react';
 import SaarthiLogo from '@/components/ui/SaarthiLogo';
 import {
-  BarChart3,
-  BookOpen,
-  ChevronLeft,
-  Code,
-  LayoutDashboard,
-  MessageSquare,
-  Settings,
-  Ticket,
   AlertTriangle,
+  BookOpen,
+  GraduationCap,
+  LayoutDashboard,
+  Settings,
+  ShieldCheck,
+  Ticket,
   X,
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/cn';
 
-const navItems: { href: string; label: string; icon: LucideIcon; exact?: boolean }[] = [
+type NavItem = { href: string; label: string; icon: LucideIcon; exact?: boolean; external?: boolean };
+
+const navItems: NavItem[] = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, exact: true },
-  { href: '/dashboard/knowledge-base', label: 'Knowledge base', icon: BookOpen },
-  { href: '/dashboard/ai-config', label: 'AI settings', icon: Settings },
-  { href: '/dashboard/conversations', label: 'Conversations', icon: MessageSquare },
-  { href: '/dashboard/tickets', label: 'Tickets', icon: Ticket },
-  { href: '/dashboard/escalations', label: 'Escalations', icon: AlertTriangle },
-  { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart3 },
-  { href: '/dashboard/install', label: 'Install widget', icon: Code },
+  { href: '/dashboard/knowledge-base', label: 'Knowledge Hub', icon: BookOpen },
+  { href: '/dashboard/assessments', label: 'Assessments', icon: GraduationCap },
+  { href: '/dashboard/readiness', label: 'Readiness', icon: ShieldCheck },
+  { href: '/dashboard/escalations', label: 'Risk Center', icon: AlertTriangle },
+  { href: '/dashboard/tickets', label: 'Actions', icon: Ticket },
+  { href: '/chat', label: 'Ask Saarthi', icon: MessageCircle, external: true },
+  { href: '/dashboard/ai-config', label: 'Settings', icon: Settings },
 ];
 
 interface SidebarProps {
@@ -36,6 +36,71 @@ interface SidebarProps {
   collapsed: boolean;
   onClose: () => void;
   onToggleCollapse: () => void;
+}
+
+function NavLink({
+  href,
+  label,
+  icon: Icon,
+  external,
+  collapsed,
+  active,
+  pending,
+  onNavigate,
+}: NavItem & {
+  collapsed: boolean;
+  active: boolean;
+  pending: boolean;
+  onNavigate: (href: string) => void;
+}) {
+  const className = cn(
+    'group relative flex items-center gap-3 rounded-xl text-body font-medium',
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/60',
+    'active:scale-[0.98] active:opacity-90 transition-[transform,opacity,background-color,color] duration-100',
+    collapsed ? 'justify-center px-0 py-3' : 'px-3 py-2.5',
+    active
+      ? 'bg-brand-accent/20 text-white shadow-soft'
+      : 'text-white/60 hover:bg-white/10 hover:text-white',
+    pending && !active && 'bg-white/5 text-white/80',
+  );
+
+  const content = (
+    <>
+      {pending ? (
+        <Loader2 className="w-[18px] h-[18px] shrink-0 animate-spin text-brand-light" aria-hidden />
+      ) : (
+        <Icon className={cn('w-[18px] h-[18px] shrink-0', active ? 'text-brand-light' : '')} aria-hidden />
+      )}
+      {!collapsed && <span className="truncate">{label}</span>}
+    </>
+  );
+
+  if (external) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        title={collapsed ? label : undefined}
+        className={className}
+      >
+        {content}
+      </a>
+    );
+  }
+
+  return (
+    <Link
+      href={href}
+      prefetch
+      onClick={() => onNavigate(href)}
+      title={collapsed ? label : undefined}
+      aria-current={active ? 'page' : undefined}
+      className={className}
+    >
+      {content}
+    </Link>
+  );
 }
 
 export default function Sidebar({ open, collapsed, onClose, onToggleCollapse }: SidebarProps) {
@@ -76,7 +141,7 @@ export default function Sidebar({ open, collapsed, onClose, onToggleCollapse }: 
             {!collapsed && (
               <div className="min-w-0">
                 <p className="font-semibold text-sm leading-tight truncate">Saarthi AI</p>
-                <p className="text-[11px] text-white/50 leading-tight truncate">Support platform</p>
+                <p className="text-[11px] text-white/50 leading-tight truncate">Human Readiness Platform</p>
               </div>
             )}
           </div>
@@ -90,37 +155,19 @@ export default function Sidebar({ open, collapsed, onClose, onToggleCollapse }: 
           </button>
         </div>
 
-        <nav className="flex-1 px-3 py-5 space-y-1 overflow-y-auto overflow-x-hidden" aria-label="Main navigation">
-          {navItems.map(({ href, label, icon: Icon, exact }) => {
-            const active = isActive(href, exact);
-            const pending = navigatingTo === href;
-            return (
-              <Link
-                key={href}
-                href={href}
-                prefetch
-                onClick={() => setNavigatingTo(href)}
-                title={collapsed ? label : undefined}
-                className={cn(
-                  'group relative flex items-center gap-3 rounded-xl text-body font-medium',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/60',
-                  'active:scale-[0.98] active:opacity-90 transition-[transform,opacity,background-color,color] duration-100',
-                  collapsed ? 'justify-center px-0 py-3' : 'px-3 py-2.5',
-                  active
-                    ? 'bg-brand-accent/20 text-white shadow-soft'
-                    : 'text-white/60 hover:bg-white/10 hover:text-white',
-                  pending && !active && 'bg-white/5 text-white/80',
-                )}
-              >
-                {pending ? (
-                  <Loader2 className="w-[18px] h-[18px] shrink-0 animate-spin text-brand-light" aria-hidden />
-                ) : (
-                  <Icon className={cn('w-[18px] h-[18px] shrink-0', active ? 'text-brand-light' : '')} aria-hidden />
-                )}
-                {!collapsed && <span className="truncate">{label}</span>}
-              </Link>
-            );
-          })}
+        <nav className="flex-1 px-3 py-5 overflow-y-auto overflow-x-hidden" aria-label="Main navigation">
+          <div className="space-y-1">
+            {navItems.map((item) => (
+              <NavLink
+                key={item.href}
+                {...item}
+                collapsed={collapsed}
+                active={!item.external && isActive(item.href, item.exact)}
+                pending={navigatingTo === item.href}
+                onNavigate={setNavigatingTo}
+              />
+            ))}
+          </div>
         </nav>
 
         <div className={cn('border-t border-white/10 p-3', collapsed ? 'flex justify-center' : '')}>

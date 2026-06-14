@@ -39,8 +39,14 @@ export async function runIngestionPipeline(
   filePath: string,
   fileType: string,
 ): Promise<void> {
+  const businessObjectId = new Types.ObjectId(businessId);
+  const documentObjectId = new Types.ObjectId(documentId);
+
   try {
-    await DocumentModel.findByIdAndUpdate(documentId, { status: 'PROCESSING' });
+    await DocumentModel.findOneAndUpdate(
+      { _id: documentObjectId, businessId: businessObjectId },
+      { status: 'PROCESSING' },
+    );
     await removeDocumentChunks(businessId, documentId);
 
     const text = await parsingService.parseFile(filePath, fileType);
@@ -80,10 +86,16 @@ export async function runIngestionPipeline(
       })),
     );
 
-    await DocumentModel.findByIdAndUpdate(documentId, { status: 'READY' });
+    await DocumentModel.findOneAndUpdate(
+      { _id: documentObjectId, businessId: businessObjectId },
+      { status: 'READY' },
+    );
   } catch (err) {
     console.error(`Ingestion failed for document ${documentId}:`, err);
-    await DocumentModel.findByIdAndUpdate(documentId, { status: 'FAILED' });
+    await DocumentModel.findOneAndUpdate(
+      { _id: documentObjectId, businessId: businessObjectId },
+      { status: 'FAILED' },
+    );
   }
 }
 

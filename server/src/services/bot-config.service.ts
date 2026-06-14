@@ -2,10 +2,12 @@ import { Types } from 'mongoose';
 import {
   BotConfig,
   BotPersonality,
+  Business,
   DEFAULT_SUGGESTED_QUESTIONS,
   EscalationRule,
   IBotConfig,
 } from '../models';
+import { AppError } from '../middleware/errorHandler';
 
 export interface BotConfigDto {
   botName: string;
@@ -72,6 +74,10 @@ export async function getPublicBotConfig(businessId: string): Promise<{
   welcomeMessage: string;
   personality: BotPersonality;
 }> {
+  const business = await Business.findById(businessId);
+  if (!business) {
+    throw new AppError('Business not found', 404);
+  }
   const config = await getOrCreateBotConfig(new Types.ObjectId(businessId));
   return {
     botName: config.botName,
@@ -81,6 +87,10 @@ export async function getPublicBotConfig(businessId: string): Promise<{
 }
 
 export async function getSuggestedQuestions(businessId: string): Promise<string[]> {
+  const business = await Business.findById(businessId);
+  if (!business) {
+    throw new AppError('Business not found', 404);
+  }
   const config = await getOrCreateBotConfig(new Types.ObjectId(businessId));
   return config.suggestedQuestions;
 }

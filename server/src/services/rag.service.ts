@@ -10,6 +10,7 @@ import * as escalationService from './escalation.service';
 import * as notificationService from './notification.service';
 import { embedQuery } from './embedding.service';
 import * as pineconeService from './pinecone.service';
+import { formatRagContext } from '../utils/rag-sanitize';
 
 export interface ChatRequest {
   businessId: string;
@@ -36,9 +37,15 @@ export interface ChatResponse {
   sources: SourceDocument[];
 }
 
-async function resolveSources(documentIds: string[]): Promise<SourceDocument[]> {
-  const uniqueIds = [...new Set(documentIds)];
+async function resolveSources(
+  businessId: Types.ObjectId,
+  documentIds: string[],
+): Promise<SourceDocument[]> {
+  const uniqueIds = [...new Set(documentIds)].filter((id) => Types.ObjectId.isValid(id));
+  if (uniqueIds.length === 0) return [];
+
   const docs = await DocumentModel.find({
+    businessId,
     _id: { $in: uniqueIds.map((id) => new Types.ObjectId(id)) },
   }).lean();
 
@@ -95,7 +102,7 @@ export async function handleChat(input: ChatRequest): Promise<ChatResponse> {
   const queryVector = await embedQuery(input.message);
   const matches = await pineconeService.queryVectors(namespace, queryVector, env.ragTopK);
 
-  const sourceDocs = await resolveSources(matches.map((m) => m.metadata.documentId));
+  const sourceDocs = await resolveSources(businessId, matches.map((m) => m.metadata.documentId));
   const filenameByDocId = Object.fromEntries(
     sourceDocs.map((s) => [s.documentId, s.filename]),
   );
@@ -128,9 +135,7 @@ export async function handleChat(input: ChatRequest): Promise<ChatResponse> {
     assistantContent = await chatService.generateRAGReply(systemPrompt, input.message);
     await Conversation.findByIdAndUpdate(conversation._id, { escalated: true });
   } else {
-    const context = matches
-      .map((m, i) => `[${i + 1}] ${m.metadata.text}`)
-      .join('\n\n');
+    const context = formatRagContext(matches.map((m) => m.metadata.text));
 
     const systemPrompt = chatService.buildSystemPrompt(
       botConfig.botName,

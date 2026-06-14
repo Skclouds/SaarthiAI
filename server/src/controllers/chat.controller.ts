@@ -5,23 +5,14 @@ import * as feedbackService from '../services/feedback.service';
 import * as ragService from '../services/rag.service';
 import { AppError } from '../middleware/errorHandler';
 
-/** Logs incoming POST /chat body before validation runs. */
-export function logChatRequest(req: Request, _res: Response, next: NextFunction): void {
-  console.log('[POST /chat] received body:', req.body);
-  next();
-}
-
-/** Runs validators and logs the exact validation failure before returning 400. */
+/** Runs validators and returns 400 on failure. */
 export function validateChatPost(validations: ValidationChain[]) {
   return async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
     await Promise.all(validations.map((validation) => validation.run(req)));
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      const details = errors.array();
-      console.error('[POST /chat] validation error:', details);
-      console.error('[POST /chat] received body:', req.body);
-      const message = details.map((e) => e.msg).join(', ');
+      const message = errors.array().map((e) => e.msg).join(', ');
       next(new AppError(message, 400));
       return;
     }
@@ -32,7 +23,6 @@ export function validateChatPost(validations: ValidationChain[]) {
 
 export async function sendMessage(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    // Public endpoint: businessId and message come from the request body (embed widget has no auth).
     const { businessId, conversationId, customerName, customerEmail, message } = req.body;
     const result = await ragService.handleChat({
       businessId,
@@ -63,8 +53,8 @@ export async function getSuggestedQuestions(
 
 export async function submitFeedback(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { messageId, rating } = req.body;
-    const result = await feedbackService.submitMessageFeedback(messageId, rating);
+    const { messageId, rating, businessId } = req.body;
+    const result = await feedbackService.submitMessageFeedback(messageId, rating, businessId);
     res.json(result);
   } catch (err) {
     next(err);

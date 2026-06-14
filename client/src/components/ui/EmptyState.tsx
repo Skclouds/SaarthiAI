@@ -34,7 +34,7 @@ export default function EmptyState({
           <Icon className="w-7 h-7 text-brand-accent" aria-hidden />
         </div>
       )}
-      <p className="text-section-title text-navy-900">{title}</p>
+      <p className="text-section-title text-navy-900" role="heading" aria-level={2}>{title}</p>
       {description && (
         <p className="text-body text-navy-500 mt-2 max-w-sm leading-relaxed">{description}</p>
       )}

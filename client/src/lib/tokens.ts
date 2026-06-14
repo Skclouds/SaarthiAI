@@ -1,3 +1,4 @@
+import { ReadinessStatus } from '@/types/assessment';
 import { DocumentStatus } from '@/types/document';
 import { TicketPriority, TicketStatus } from '@/types/ticket';
 
@@ -26,6 +27,18 @@ export const documentStatusBadge: Record<DocumentStatus, string> = {
   PROCESSING: 'bg-warning-50 text-warning-700 border-warning-100',
   READY: 'bg-success-50 text-success-700 border-success-100',
   FAILED: 'bg-danger-50 text-danger-700 border-danger-100',
+};
+
+export const readinessStatusBadge: Record<ReadinessStatus, string> = {
+  READY: 'bg-success-50 text-success-700 border-success-100',
+  PARTIALLY_READY: 'bg-warning-50 text-warning-700 border-warning-100',
+  NOT_READY: 'bg-danger-50 text-danger-700 border-danger-100',
+};
+
+export const readinessStatusLabel: Record<ReadinessStatus, string> = {
+  READY: 'Ready',
+  PARTIALLY_READY: 'Partially Ready',
+  NOT_READY: 'Not Ready',
 };
 
 export function formatStatusLabel(status: string): string {
