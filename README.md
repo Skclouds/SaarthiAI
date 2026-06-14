@@ -1,7 +1,11 @@
-# SaarthiAI — AI Customer Support Assistant Platform
+# SaarthiAI — Human Readiness & Competency Platform
 
-> **Smarter support. Better experience.**
-> A multi-tenant SaaS platform that lets any business deploy an AI support assistant trained on its own knowledge base — answering customer queries, creating and prioritizing tickets, escalating to humans, and embedding anywhere as a chat widget.
+> **From Knowledge to Readiness.**
+> SaarthiAI turns SOPs, manuals, policies, and training material into measurable competency,
+> readiness scores, risk intelligence, and automated retraining — so organizations know their
+> people are *truly ready* before performing critical tasks.
+
+**PaviqLabs · FAR AWAY 2026** · Themes: Railways · Examinations · Logistics & Transit
 
 ---
 
@@ -10,55 +14,100 @@
 | Resource | URL |
 |---|---|
 | **Live App (Admin Portal)** | https://saarthi-ai-alpha-five.vercel.app |
-| **Customer Chat Widget (demo)** | https://saarthi-ai-alpha-five.vercel.app/chat?businessId=6a2852c35be34d45b9e438d2 |
+| **Customer / Learner Chat Widget (demo)** | https://saarthi-ai-alpha-five.vercel.app/chat?businessId=6a2852c35be34d45b9e438d2 |
 | **Backend API** | https://saarthiai-6zp4.onrender.com |
 | **GitHub Repository** | https://github.com/Skclouds/SaarthiAI |
 
-> **Cold-start note:** the backend runs on Render's free tier, which spins down after ~15 minutes of inactivity. The **first** request after idle can take up to **~50 seconds** to wake the server — please allow a moment on the first load. Every request after that is fast.
+> **Cold-start note:** the backend runs on Render's free tier and spins down after ~15 minutes of
+> inactivity. The **first** request after idle can take up to **~50 seconds** to wake the server —
+> please allow a moment on first load. Every request after that is fast.
 
 ---
 
 ## Demo & Admin Access
 
-Sign in to the admin dashboard at **https://saarthi-ai-alpha-five.vercel.app/login**:
+Sign in to the dashboard at **https://saarthi-ai-alpha-five.vercel.app/login**:
 
 ```
-Email:    admin@saarthi-demo.com
-Password: Saarthi@2026
+Email:    kaushalsingh1715@gmail.com
+Password: <your-password-here>
 ```
 
-This account is a fully set-up tenant with a sample knowledge base already loaded (a fictional online store, **Lumio** — source files in `/sample-data`), so you can test the assistant immediately.
+This account is a fully set-up tenant with sample knowledge bases already loaded (see
+`/sample-data`), so you can generate assessments and test the readiness loop immediately.
 
 ### Try it in 60 seconds
-1. **Open the chat widget** (no login required): the Customer Chat Widget link above. Ask **"What is your refund policy?"** — the assistant answers from the Lumio docs and cites its sources.
-2. **Trigger an escalation:** send **"I need a refund"** — it routes for human follow-up and auto-creates a prioritized support ticket.
-3. **Log in to the dashboard** to see the new conversation, the auto-created ticket, the live notification, and the analytics update.
+1. **Upload a document** (or use the loaded ones) in **Knowledge Base** — e.g. a railway safety
+   SOP, an exam study guide, or a logistics driver manual.
+2. **Generate an assessment** from that document with one click.
+3. **Take it as a learner** (open the public learner link in an incognito window) — answer a few
+   questions wrong on purpose.
+4. **See the result:** a competency score, a **Ready / Partially Ready / Not Ready** status, the
+   weak topics detected, and an **auto-assigned retraining task** — all visible on the
+   **Readiness Insights** dashboard.
 
 ---
 
-## Overview
+## The Problem
 
-SaarthiAI gives support teams an AI assistant grounded entirely in their own documents using **retrieval-augmented generation (RAG)**. A business admin uploads their knowledge base, configures the bot's personality and escalation rules, and embeds a chat widget on any website. Customers get instant, accurate answers; anything the AI can't or shouldn't handle is escalated into a structured ticket. Everything — conversations, tickets, escalations, analytics — is isolated per business in a true multi-tenant model.
+Organizations across railways, logistics, healthcare, manufacturing, and education spend heavily
+to train people — but have no reliable way to prove they are actually ready.
+
+- **Completion is not competency.** Course completion is tracked, but understanding, retention,
+  and real-world ability are never measured.
+- **No risk visibility.** There is no early warning before an untrained person causes an accident,
+  failure, or compliance breach.
+- **Manual and reactive.** Assessments, gap analysis, and retraining are slow, manual, and happen
+  only after something goes wrong.
+
+The core question shifts from *"Did they complete training?"* to *"Are they actually ready?"*
 
 ---
 
-## Features
+## The Solution — A Closed Readiness Loop
 
-### Core
-- **Admin portal** — register/login/forgot-password; dashboard with total conversations, open/resolved/escalated tickets, and AI resolution rate.
-- **Knowledge base management** — upload PDF, DOCX, TXT, and Markdown; view, delete, and re-index documents (parsed -> chunked -> embedded -> stored).
-- **AI configuration** — bot name, welcome message, personality (Professional / Friendly / Technical), suggested questions, and escalation rules.
-- **AI chat (RAG)** — answers generated only from the business's documents, formatted in Markdown (headings, lists, tables, links), with source citations.
-- **Ticket management** — captures name, email, query, priority; statuses Open -> In Progress -> Resolved -> Closed.
-- **Intelligent escalation** — detects refunds, payment failures, legal issues, outages, and human requests; auto-creates prioritized tickets shown on an escalation dashboard.
-- **Conversation history** — full transcripts with an escalation/ticket timeline, plus search.
-- **Analytics** — chat metrics (volume, avg response time, resolution & escalation rates) and KB metrics (most-referenced docs, failed/unanswered queries).
+SaarthiAI turns any organizational document into an automated readiness loop:
 
-### Bonus (also implemented)
-- **Multi-tenant SaaS** — every record scoped by `businessId`; isolated Pinecone namespace per business.
-- **Embeddable widget** — a self-contained `widget.js` any website can install with one script tag.
-- **CSAT answer ratings** — customers rate AI answers; satisfaction surfaced in analytics.
-- **Real-time notifications** — dashboard bell for new conversations, tickets, and escalations.
+```
+Upload SOP / training material
+   -> AI extracts knowledge (RAG over a private vector store)
+   -> AI generates an assessment (MCQ / scenario)
+   -> Learner is evaluated -> competency score (per topic)
+   -> Readiness status: Ready / Partially Ready / Not Ready
+   -> Knowledge gaps + at-risk learners detected
+   -> Retraining auto-assigned + managers notified
+```
+
+Instead of simply managing training, **SaarthiAI proves readiness and predicts risk before
+failures happen.**
+
+---
+
+## Key Features
+
+- **AI Assessment Generator** — converts document content into grounded MCQ / scenario assessments.
+- **Competency & Readiness Engine** — auto-grades attempts, scores per topic, and assigns
+  Ready / Partially Ready / Not Ready.
+- **Gap Detection & Risk** — pinpoints weak topics and surfaces at-risk learners on a dashboard.
+- **Autonomous Retraining** — low scores automatically create retraining tasks and notify managers.
+- **AI Mentor (RAG)** — document-grounded Q&A available to every learner.
+- **Multi-Tenant SaaS** — each organization gets isolated documents, learners, scores, and analytics.
+- **Embeddable Widget** — a single `widget.js` to deploy the assistant on any site.
+
+---
+
+## One Platform, Every Theme
+
+SaarthiAI is industry-agnostic by design — upload a different document, get a different readiness
+program.
+
+| Theme | Use case | Example |
+|---|---|---|
+| **Railways** | Operator safety readiness | Signal protocols, emergency braking & speed rules → prove operators are ready before duty |
+| **Examinations** | Certification / exam readiness | Study material → adaptive assessments, competency scores & exam-readiness indicators |
+| **Logistics & Transit** | Driver & compliance readiness | Hazmat, hours-of-service & inspection SOPs → driver competency and risk detection |
+
+Sample documents for each theme are included in `/sample-data`.
 
 ---
 
@@ -69,9 +118,9 @@ SaarthiAI gives support teams an AI assistant grounded entirely in their own doc
 | Frontend | Next.js 14 (App Router), React, TypeScript, Tailwind CSS |
 | Backend | Node.js, Express, TypeScript |
 | Database | MongoDB Atlas (Mongoose) |
-| Vector DB | Pinecone (namespace per business) |
+| Vector DB | Pinecone (one namespace per tenant) |
 | AI | Google Gemini — `gemini-embedding-001` (1536-dim) + `gemini-2.5-flash` |
-| Auth | JWT (bcrypt) + Google OAuth; RBAC (ADMIN / AGENT) |
+| Security | JWT (bcrypt) + RBAC, rate-limiting, helmet, tenant isolation |
 | Hosting | Vercel (frontend) · Render (backend) |
 
 ---
@@ -80,25 +129,14 @@ SaarthiAI gives support teams an AI assistant grounded entirely in their own doc
 
 ![SaarthiAI System Architecture](docs/architecture.png)
 
-The Next.js admin portal and the embeddable chat widget both call the Express REST API, which handles auth, RBAC, the RAG pipeline, and escalation. MongoDB stores all application data; Pinecone stores vector embeddings; Google Gemini powers both embeddings and chat.
+The admin portal and the embeddable widget call the Express REST API, which handles auth, RBAC,
+the RAG pipeline, assessment generation, and the readiness engine. MongoDB stores application data;
+Pinecone stores vector embeddings (isolated per tenant); Google Gemini powers embeddings, chat, and
+assessment generation.
 
-### How it works
-
-**Ingestion (when a document is uploaded):**
-```
-upload (PDF / DOCX / TXT / MD)  ->  parse  ->  chunk  ->  embed with Gemini
-->  upsert vectors to Pinecone (namespace = businessId)
-```
-
-**Query (RAG — when a customer asks something):**
-```
-question  ->  embed with Gemini  ->  similarity search in the business's namespace
-->  top chunks + bot config  ->  Gemini  ->  grounded answer + sources
-```
-
-**Escalation:** every chat turn runs rule- and intent-based detection (refunds, payments, legal, outages, "talk to a human"). When triggered, a prioritized ticket is created and the conversation is flagged.
-
-**Multi-tenancy:** isolation is enforced at two levels — `businessId` on every MongoDB record, and a dedicated Pinecone namespace per business — so no business can ever access another's data.
+**Ingestion:** `upload -> parse -> chunk -> embed (Gemini) -> upsert to Pinecone (namespace = businessId)`
+**Query (RAG):** `question -> embed -> similarity search in tenant namespace -> top chunks + config -> Gemini -> grounded answer`
+**Readiness:** `assessment attempt -> grade -> competency score -> readiness status -> gap detection -> auto-retraining`
 
 ---
 
@@ -106,12 +144,14 @@ question  ->  embed with Gemini  ->  similarity search in the business's namespa
 
 ```
 SaarthiAI/
-├── client/        # Next.js frontend (admin portal + chat widget + demo page)
-├── server/        # Express API (auth, RBAC, RAG, tickets, analytics) - see server/README.md for full API reference
-├── sample-data/   # Sample knowledge base (Lumio) for testing
+├── client/        # Next.js frontend (admin portal, readiness pages, learner page, widget)
+├── server/        # Express API (auth, RAG, assessments, readiness, tickets, analytics)
+├── sample-data/   # Sample SOPs / study material for each theme
 ├── docs/          # Architecture diagram
 └── README.md
 ```
+
+See `server/README.md` for the full API reference.
 
 ---
 
@@ -119,11 +159,11 @@ SaarthiAI/
 
 ### Prerequisites
 - Node.js 18+
-- MongoDB connection string (Atlas free tier works)
-- A Pinecone index — dimension **1536**, metric **cosine**
-- A Google Gemini API key (Google AI Studio — free tier)
+- MongoDB connection string (Atlas free tier)
+- Pinecone index — dimension **1536**, metric **cosine**
+- Google Gemini API key (Google AI Studio — free tier)
 
-### Install
+### Install & run
 
 ```bash
 git clone https://github.com/Skclouds/SaarthiAI.git
@@ -132,8 +172,6 @@ cd SaarthiAI
 cd server && npm install
 cd ../client && npm install
 ```
-
-### Configure environment variables
 
 **`server/.env`**
 ```
@@ -150,61 +188,40 @@ CLIENT_URL=http://localhost:3000
 NEXT_PUBLIC_API_URL=http://localhost:5000
 ```
 
-### Run
-
 ```bash
 # Terminal 1 — backend
 cd server && npm run dev
-
 # Terminal 2 — frontend
 cd client && npm run dev
 ```
 
-Open http://localhost:3000, register a business, and upload the files in `/sample-data` to start chatting.
-
----
-
-## Using the Embeddable Widget
-
-From the **Install Widget** page (after logging in) copy your snippet — your `businessId` is pre-filled — and paste it into any website before `</body>`:
-
-```html
-<script
-  src="https://saarthi-ai-alpha-five.vercel.app/widget.js"
-  data-business-id="YOUR_BUSINESS_ID"
-  data-api-url="https://saarthiai-6zp4.onrender.com"
-></script>
-```
-
-Customers can chat without logging in, and every conversation, ticket, and escalation appears in that business's dashboard.
+Open http://localhost:3000, register an organization, upload a document from `/sample-data`, and
+generate your first assessment.
 
 ---
 
 ## Deployment
 
 - **Frontend (Vercel):** root directory `client`; set `NEXT_PUBLIC_API_URL` to the Render API URL.
-- **Backend (Render):** root directory `server`; build `npm install && npm run build`; start `npm start`; set env vars including `CLIENT_URL` = the Vercel URL (for CORS). The server reads `process.env.PORT` (Render injects it).
+- **Backend (Render):** root directory `server`; build `npm install && npm run build`; start
+  `npm start`; set env vars including `CLIENT_URL` = the Vercel URL. The server reads
+  `process.env.PORT`.
 - **MongoDB Atlas:** allow network access from anywhere (`0.0.0.0/0`).
 - **Pinecone:** index dimension 1536, metric cosine.
 
 ---
 
-## Requirement Coverage
+## What's Next
 
-| Requirement | Status |
-|---|---|
-| Admin auth (login / register / forgot password) + dashboard metrics | Done |
-| Knowledge base (upload PDF/DOCX/TXT/MD, view, delete, re-index) | Done |
-| AI processing (parse -> chunk -> embed -> vector store) | Done |
-| AI configuration (bot name, welcome, personality, escalation rules) | Done |
-| Chat widget (Markdown, tables, links + suggested questions) | Done |
-| Ticket management (fields + statuses) | Done |
-| Intelligent escalation + escalation dashboard | Done |
-| Conversation history + search | Done |
-| Analytics (chat + KB metrics) | Done |
-| Backend: Auth, RBAC, REST API; MongoDB; Pinecone; Gemini | Done |
-| Bonus: multi-tenant, embeddable widget, CSAT ratings, notifications | Done |
+- **Risk Intelligence** — predict workforce risk from competency trends and compliance history.
+- **Vernacular + WhatsApp** — Hindi and regional languages; readiness delivered over WhatsApp.
+- **Digital Competency Passport** — a living, portable readiness profile per individual.
+- **Deeper compliance** — DPDP-ready data handling, audit trails, and role-based analytics.
 
 ---
 
-_Built with Next.js, Express, MongoDB, Pinecone, and Google Gemini._
+## Team
+
+**Kaushal Singh** · **Rohan Mane** — PaviqLabs
+
+_Built for FAR AWAY 2026 with Next.js, Express, MongoDB, Pinecone, and Google Gemini._
