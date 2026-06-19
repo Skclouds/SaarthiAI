@@ -30,7 +30,7 @@ Sign in to the dashboard at **https://saarthi-ai-alpha-five.vercel.app/login**:
 
 ```
 Email:    kaushalsingh1715@gmail.com
-Password: <your-password-here>
+Password: Kaushalsk@3012
 ```
 
 This account is a fully set-up tenant with sample knowledge bases already loaded (see
